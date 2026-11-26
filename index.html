@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>dreams game catalog!</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #111;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+.rainbow {
+    background: linear-gradient(
+        90deg,
+        red, orange, yellow, lime,
+        cyan, blue, violet, red
+    );
+    background-size: 400% 400%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: rainbow 2s linear infinite;
+}
+
+@keyframes rainbow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 400% 50%; }
+}
+
+.header {
+    background: black;
+    padding: 25px 10px;
+    overflow: hidden;
+}
+
+.ascii {
+    display: inline-block;
+    white-space: pre;
+    font-family: monospace;
+    font-size: clamp(3px, 1.05vw, 15px);
+    line-height: 1.15;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.second-ascii {
+    margin: 25px 0 15px;
+    display: inline-block;
+}
+
+.subtitle {
+    font-size: 18px;
+    margin: 15px;
+}
+
+.games {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 300px));
+    justify-content: center;
+    gap: 30px;
+    padding: 25px;
+}
+
+.game {
+    width: 100%;
+    max-width: 500px;
+    height: 300px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 18px;
+    background: #222;
+    border: 3px solid #444;
+    box-shadow: 0 5px 15px rgba(0,0,0,.5);
+    transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.game:hover {
+    transform: scale(1.045);
+    box-shadow: 0 0 30px rgba(255,255,255,.55);
+    z-index: 2;
+}
+
+.game img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    inset: 0;
+    transition: transform .4s ease;
+}
+
+.game:hover img {
+    transform: scale(1.08);
+}
+
+.game-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 25px 15px;
+    background: linear-gradient(
+        transparent 20%,
+        rgba(0,0,0,.35) 45%,
+        rgba(0,0,0,.95) 100%
+    );
+}
+
+.game h2 {
+    font-family: "Comic Sans MS", "Comic Sans", cursive;
+    font-size: clamp(23px, 4vw, 34px);
+    margin: 0 0 20px;
+    text-shadow: 2px 2px 5px black;
+}
+
+.play {
+    display: inline-block;
+    padding: 14px 45px;
+    border-radius: 12px;
+    border: 2px solid white;
+    color: white;
+    background: black;
+    text-decoration: none;
+    font-size: 23px;
+    font-weight: bold;
+    font-family: "Comic Sans MS", cursive;
+    transition: .25s;
+}
+
+.play:hover {
+    background: white;
+    color: black;
+    transform: scale(1.12);
+    box-shadow: 0 0 20px white;
+}
+
+#password-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: #080808;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.password-box {
+    width: 100%;
+    max-width: 500px;
+    padding: 35px 25px;
+    background: #171717;
+    border: 2px solid #555;
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(255,255,255,.12);
+}
+
+.password-box h1 {
+    font-family: "Comic Sans MS", cursive;
+    font-size: 30px;
+}
+
+.email-info {
+    line-height: 1.7;
+    font-size: 15px;
+    color: #ddd;
+    margin-bottom: 25px;
+}
+
+.password-box input {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    border-radius: 9px;
+    border: 2px solid #666;
+    background: #090909;
+    color: white;
+    font-size: 17px;
+    outline: none;
+    margin-bottom: 15px;
+}
+
+.password-box input:focus {
+    border-color: #fff;
+}
+
+.password-box button {
+    padding: 13px 35px;
+    border-radius: 9px;
+    border: none;
+    background: white;
+    color: black;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.password-box button:hover {
+    transform: scale(1.08);
+    background: #ccc;
+}
+
+#error {
+    color: #ff4444;
+    margin-top: 15px;
+    min-height: 20px;
+}
+
+#catalog {
+    display: none;
+}
+
+footer {
+    background: black;
+    padding: 25px;
+    color: #aaa;
+}
+
+@media (max-width: 250px) {
+    .ascii {
+        font-size: 3px;
+    }
+
+    .game {
+        height: 400px;
+    }
+
+    .games {
+        padding: 12px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- enter the password you dumbass -->
+
+<div id="password-screen">
+    <div class="password-box">
+        <h1 class="rainbow">dreams game catalog!</h1>
+
+        <p class="email-info">
+            Email 32andpea@hayward.k12.wi.us if you're at school
+            for the password.<br><br>
+
+            If you are at home, email
+            b4113rz3r0@gmail.com for the password.
+        </p>
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Enter password..."
+            autocomplete="off"
+        >
+
+        <button onclick="checkPassword()">Enter Website</button>
+
+        <div id="error"></div>
+    </div>
+</div>
+
+<!-- main website -->
+
+<div id="catalog">
+
+    <header class="header">
+
+<pre class="ascii rainbow">
+                                                                             __ 
+   _                                                       _       _        |  |
+ _| |___ ___ ___ _____ ___    ___ ___ _____ ___    ___ ___| |_ ___| |___ ___|  |
+| . |  _| -_| .'|     |_ -|  | . | .'|     | -_|  |  _| .'|  _| .'| | . | . |__|
+|___|_| |___|__,|_|_|_|___|  |_  |__,|_|_|_|___|  |___|__,|_| |__,|_|___|_  |__|
+                             |___|                                      |___|   
+</pre>
+
+    </header>
+
+    <div class="second-ascii rainbow">
+
+<pre class="ascii">
+                       __ 
+                      |  |
+ ___ ___ _____ ___ ___|  |
+| . | .'|     | -_|_ -|__|
+|_  |__,|_|_|_|___|___|__|
+|___|                     
+</pre>
+
+    </div>
+
+    <p class="subtitle rainbow">
+        🔔 the unity web player games require proxies. 🔔
+    </p>
+
+    <main class="games" id="game-list"></main>
+
+    <footer>
+        <p class="rainbow">dreams game catalog!</p>
+        <p>enjoy playing!</p>
+        <p>made by dreamwarriorthegoat (pearce a).</p>
+    </footer>
+
+</div>
+
+<script>
+
+// passwords and stuffs i think
+
+function checkPassword() {
+    const entered = document.getElementById("password").value.trim();
+
+    if (entered === "magicword67") {
+        document.getElementById("password-screen").style.display = "none";
+        document.getElementById("catalog").style.display = "block";
+    } else {
+        document.getElementById("error").textContent =
+            "Incorrect password! Try again.";
+    }
+}
+
+document.getElementById("password").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") checkPassword();
+});
+
+
+// kickass games
+
+const games = [
+
+{
+name: "tanuki sunset!",
+link: "https://dreamwarriorthegoat.github.io/tanuki-sunset",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAkx8RmY62U2f2LJjCPtZji5ryf4JofeeDr19BGutwC63yhvPCjdb--Eox&s=10"
+},
+
+{
+name: "bacon may die!",
+link: "https://dreamwarriorthegoat.github.io/bacon-may-die",
+image: "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/646240/capsule_616x353.jpg?t=1664270316"
+},
+
+{
+name: "web dashers!",
+link: "https://dreamwarriorthegoat.github.io/web-dashers",
+image: "https://web-dashers.com/assets/web-dashers-cover.png"
+},
+
+{
+name: "bitlife!",
+link: "https://dreamwarriorthegoat.github.io/bitlife",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTT63757Bv9iUcwcex6dSBFgesOVeV0BSaMn_B1D1W4Zg&s=10"
+},
+
+{
+name: "deltarune!",
+link: "https://dreamwarriorthegoat.github.io/deltarune",
+image: "https://i0.wp.com/spoilerfreereviews.com/wp-content/uploads/2022/04/Deltarune-poster.png?fit=1920%2C1080&ssl=1"
+},
+
+{
+name: "plants vs zombies!",
+link: "https://dreamwarriorthegoat.github.io/pvz",
+image: "https://media.wired.com/photos/59345a8c09f4ce09698ed9b0/3:2/w_2560%2Cc_limit/pvzstreet_1024x768.jpg"
+},
+
+{
+name: "just shapes and beats!",
+link: "https://dreamwarriorthegoat.github.io/jsab",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_s85od1lVa8rJl1KkdoFvcVt-EGe15v_FCc7yY8u4P58aT0Gygn4TxK4&s=10"
+},
+
+{
+name: "ovo!",
+link: "https://dreamwarriorthegoat.github.io/ovo",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2_iHiCKECHMknyJhy7umqEITsOCfCMQN469-8q-UqJA&s=10"
+},
+
+{
+name: "cuphead!",
+link: "https://dreamwarriorthegoat.github.io/cuphead",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSu1FO_3VtKhlnJ1AOjSntZ9vXOMGTgZU9M1k2_p5fAyw&s=10"
+},
+
+{
+name: "spaceflight simulator!",
+link: "https://dreamwarriorthegoat.github.io/spaceflight-simulator",
+image: "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1718870/capsule_616x353.jpg?t=1793808770"
+},
+
+{
+name: "granny!",
+link: "https://dreamwarriorthegoat.github.io/granny",
+image: "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/962400/header.jpg?t=1687541775"
+},
+
+{
+name: "hollow knight silksong!",
+link: "https://dreamwarriorthegoat.github.io/hollow-knight-silksong",
+image: "https://i0.wp.com/www.qualbert.com/wp-content/uploads/2025/09/Silksong-wallpaper.jpg?resize=1170%2C720&ssl=1"
+},
+
+{
+name: "slime ranchers!",
+link: "https://dreamwarriorthegoat.github.io/slime-ranchers",
+image: "https://cdn1.epicgames.com/corydalis/offer/SlimeRancher-Keyart_Wishlist-Landscape-2560x1440-b2f7b22e6d19dff415daf5dbe4d8e78c.jpg"
+},
+
+{
+name: "flying gorilla!",
+link: "https://dreamwarriorthegoat.github.io/flying-gorilla",
+image: "https://i.ytimg.com/vi/NfbQoOWsH4A/maxresdefault.jpg"
+},
+
+{
+name: "fish!",
+link: "https://dreamwarriorthegoat.github.io/fish",
+image: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4312850/865acdba97b457221f4732b6c18f3954f14f3699/header.jpg?t=1787371333"
+},
+
+{
+name: "undertale!",
+link: "https://dreamwarriorthegoat.github.io/undertale",
+image: "https://i.kickstarter.com/assets/011/533/904/f58978f175eba8065d1b5afe4545876d_original.png?anim=false&fit=cover&gravity=auto&height=873&origin=ugc&q=92&v=1463684109&width=1552&sig=kzX%2B5jjdyHCsUy0u9j7uM%2FXJHOkl4YpVOcP%2BAD%2BJZ0U%3D"
+},
+
+{
+name: "bendy and the ink machine!",
+link: "https://dreamwarriorthegoat.github.io/bendy-and-the-ink-machine",
+image: "https://cdn1.epicgames.com/spt-assets/0b1283e5bfa64ad48f3862b79abc20b9/bendy-and-the-ink-machine-1e8cj.png"
+},
+
+{
+name: "crazy cattle 3d!",
+link: "https://dreamwarriorthegoat.github.io/crazy-cattle-3d",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQw0HVnlmL0XOSJJJJrGz3nWe9eYk-TOwk_zrjGB5KB2PKNc8yat8g9gqfQ&s=10"
+},
+
+{
+name: "untitled goose game!",
+link: "https://dreamwarriorthegoat.github.io/untitled-goose-game",
+image: "https://assets.nintendo.com/image/upload/q_auto/f_auto/store/software/switch/70010000014141/e3549b645ea3dc77411280ba4a83f018235bbdb6f0b32039a5519cee985f0f4f"
+},
+
+{
+name: "iron lung!",
+link: "https://dreamwarriorthegoat.github.io/iron-lung",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPMIenNcEpAYUe8JTDUIS-WGhnwThiqOQxcDeNjEzfhA&s"
+},
+
+{
+name: "terraria!",
+link: "https://dreamwarriorthegoat.github.io/terraria",
+image: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/105600/header.jpg?t=1769844435"
+},
+
+{
+name: "hollow knight!",
+link: "https://dreamwarriorthegoat.github.io/hollow-knight",
+image: "https://assets.nintendo.com/image/upload/ar_16:9,c_lpad,w_1240/b_white/f_auto/q_auto/store/software/switch/70010000003208/4643fb058642335c523910f3a7910575f56372f612f7c0c9a497aaae978d3e51"
+},
+
+{
+name: "mindwave!",
+link: "https://dreamwarriorthegoat.github.io/mindwave",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-rMIpwUBNGFMV7q0l2mFWGRsrIYYZ_PRc-8YkcBP4QA&s=10"
+},
+
+{
+name: "minecraft!",
+link: "https://dreamwarriorthegoat.github.io/minecraft",
+image: "https://assets.nintendo.com/image/upload/q_auto/f_auto/store/software/switch2/70010000119400/a28a81253e919298beab2295e39a56b7a5140ef15abdb56135655e5c221b2a3a"
+},
+
+{
+name: "flappy bird!",
+link: "https://dreamwarriorthegoat.github.io/flappy-bird",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6psDJKVJpUF1uO4fuSC102RJo5m7hdhKaPfujyuEF9w&s"
+},
+
+{
+name: "crossy road!",
+link: "https://dreamwarriorthegoat.github.io/crossy-road",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRd0v6ke2JcXqC6T6mHxun3kND-YQFbSypdRrVeZ7j8yQ&s"
+},
+
+{
+name: "subway surfers!",
+link: "https://dreamwarriorthegoat.github.io/subway-surfers",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRO2W8En0PnYWR7dLBfzfwEubKFAyex06MHa-knjFmqag&s=10"
+},
+
+{
+name: "bloons tower defense 4!",
+link: "https://dreamwarriorthegoat.github.io/btd4",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUPKaEZChLxUtEdb8DK2Vd9lXUu1uLi-QSKgad5XJmTQ&s=10"
+},
+
+{
+name: "fruit ninja!",
+link: "https://dreamwarriorthegoat.github.io/fruit-ninja",
+image: "https://www.coolmathgames.com/sites/default/files/FruitNinja_OG-Logo.jpg"
+},
+
+{
+name: "tomb of the mask!",
+link: "https://dreamwarriorthegoat.github.io/totm",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwt-t4OqMDJN3HApgzXxDDttAtdsR9H2N89_e7OlbZa1OC-iDCrxJEICk&s=10"
+},
+
+{
+name: "retro bowl!",
+link: "https://dreamwarriorthegoat.github.io/retro-bowl",
+image: "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/ee9ca3764ef4289a48a1ebf457ef605441ed1f35a0f2eb12707a70d609e53686/retro-bowl-logo.png"
+},
+
+{
+name: "snow rider 3d!",
+link: "https://dreamwarriorthegoat.github.io/snow-rider-3d",
+image: "https://web-games.io/cache/data/image/game/SnowRider3D-f314x314-jpg.webp"
+},
+
+{
+name: "drive mad!",
+link: "https://dreamwarriorthegoat.github.io/drive-mad",
+image: "https://play-lh.googleusercontent.com/69T5dvUQ9eoR58EteTt4Aqc-aDytLDakTR65drPMEYE-p_qHH_wIpnS1zAaGuq-16UrZb1jjztTeMLCW6oekaw"
+},
+
+{
+name: "slice master!",
+link: "https://dreamwarriorthegoat.github.io/slice-master",
+image: "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/743089b5c6b4dda8bd05d920ab00a0b3/slice-master-logo.png"
+},
+
+{
+name: "pokemon emerald!",
+link: "https://dreamwarriorthegoat.github.io/pokemon-emerald",
+image: "https://assets-prd.ignimgs.com/2022/02/08/pokemonemerald-sq-1644346782465.jpg?crop=1%3A1%2Csmart&format=jpg&auto=webp&quality=80"
+},
+
+{
+name: "pokemon fire red!",
+link: "https://dreamwarriorthegoat.github.io/pokemon-fire-red",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJKVcYLpsEYc0fqma-Mpf7C5_tI7dmIrSvBjVslamcbQ&s=10"
+},
+
+{
+name: "google snake!",
+link: "https://dreamwarriorthegoat.github.io/google-snake",
+image: "https://www5.minijuegosgratis.com/v3/games/thumbnails/246309_1.jpg"
+},
+
+{
+name: "idle mining empire!",
+link: "https://dreamwarriorthegoat.github.io/idle-mining-empire",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXC-00WZt1na8hMtdKkKAnNpNNmd-PYKYmlv7hwuppgw&s=10"
+},
+
+{
+name: "drift boss!",
+link: "https://dreamwarriorthegoat.github.io/drift-boss",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQodO_abM1Q89dWR9mhchdiNFrl8Gv86ivuMzhsQ72nQvY9Io4ULleXs9s&s=10"
+},
+
+{
+name: "undertale yellow!",
+link: "https://dreamwarriorthegoat.github.io/undertale-yellow",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnPO-EVwKc9Rvw3-b76Lid-xQXlejna8DUqro_jEJGqyn92TL4KcGAh7A5&s=10"
+},
+
+{
+name: "eggy car!",
+link: "https://dreamwarriorthegoat.github.io/eggy-car",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAHJj3LlKVrBti-ZZ8MwPEl_hOYgOdAiJYxZLrZhSOAw&s"
+},
+
+{
+name: "nut simulator!",
+link: "https://dreamwarriorthegoat.github.io/nut-simulator",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRCI_Al0H_tnWAK4PAFvd4iAUTxWb5ETbKZq784_9Vwg&s=10"
+},
+
+{
+name: "idle breakout!",
+link: "https://dreamwarriorthegoat.github.io/idle-breakout",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRknA0Bw4nrVe8o4TQtwZs2rH5692a0ZbhfC-pB7jtyuD88J-ehKawr9WE&s=10"
+},
+
+{
+name: "polytrack!",
+link: "https://dreamwarriorthegoat.github.io/polytrack",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZNQwcb3xP6foQWyIIiCE8TsDuswOtL4yX3L49O5F-NSc4cU3FNmxWzDog&s=10"
+},
+
+{
+name: "run 3!",
+link: "https://dreamwarriorthegoat.github.io/run-3",
+image: "https://www.coolmathgames.com/sites/default/files/Run%203%20Square%20Image.png"
+},
+
+{
+name: "basketball legends!",
+link: "https://dreamwarriorthegoat.github.io/basketball-legends",
+image: "https://basketballstarsfree.io/data/image/game/basketball-legends.webp"
+},
+
+{
+name: "stickman hook!",
+link: "https://dreamwarriorthegoat.github.io/stickman-hook",
+image: "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/99e090d154caf30f3625df7e456d5984/stickman-hook-logo.png"
+},
+
+{
+name: "super mario 64!",
+link: "https://dreamwarriorthegoat.github.io/sm64",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMvXR17DdT6y1ZXg1DWToZH2nrTmDWTUtD2U3xATbdJqZXAFOA9cxD7LO9&s=10"
+},
+
+{
+name: "little alchemy 2!",
+link: "https://dreamwarriorthegoat.github.io/little-alchemy-2",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRu2y7ESy0o0fpbd15mKAYyTmj1krN5_Gh74LPzyY0sNQ&s=10"
+},
+
+{
+name: "paper io 2!",
+link: "https://dreamwarriorthegoat.github.io/paperio2",
+image: "https://paperio2free.com/assets/upload/paper-io-2/webp/paper-io-2.webp"
+},
+
+{
+name: "bloxorz!",
+link: "https://dreamwarriorthegoat.github.io/bloxorz",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNCylsiIKkQR_qtA7Gc8EY-HqMu4eK_UjcdpCdCjjByw&s=10"
+},
+
+{
+name: "the worlds hardest game!",
+link: "https://dreamwarriorthegoat.github.io/whg",
+image: "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=314,height=314,fit=cover,f=auto/61368b108e1e8625e6f7b2daccb98324/worlds-hardest-game-logo.png"
+},
+
+{
+name: "tap tap shots!",
+link: "https://dreamwarriorthegoat.github.io/tap-tap-shots",
+image: "https://imgs.crazygames.com/games/tap-tap-shots/cover_1x1-1732719841511.png?format=auto&quality=100&metadata=none&width=1200"
+},
+
+{
+name: "doge miner!",
+link: "https://dreamwarriorthegoat.github.io/doge-miner",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPHsn5umaZVFIMUUVUsFIoXQ751rC326UfnLJ8sHJPXcrBjzp6iT8W6os&s=10"
+},
+
+{
+name: "slope!",
+link: "https://dreamwarriorthegoat.github.io/slope",
+image: "https://play-lh.googleusercontent.com/Ev5gkPTONr-1k1r7erT0iiW-pUZoGUH_6FVQdD91e9ghSAqZRMTaFVGQW5Z6PLOfFgxZnJhdEBE2z-TgfZ1bsg"
+},
+
+{
+name: "cut the rope!",
+link: "https://dreamwarriorthegoat.github.io/cut-the-rope",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAU068DjmMFvqw3uGrB4aWzgUnM-DwR4W9mvONT5-GvA&s=10"
+},
+
+{
+name: "cookie clicker!",
+link: "https://dreamwarriorthegoat.github.io/cookie-clicker",
+image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_v1u2aRkslPrhdqvnmShPEVstDyrukrQBTUNPc6VXmg&s"
+}
+
+];
+
+
+// game buttons thingymabobbers
+
+const gameList = document.getElementById("game-list");
+
+games.forEach(game => {
+
+    const card = document.createElement("div");
+    card.className = "game";
+
+    const img = document.createElement("img");
+    img.src = game.image;
+    img.alt = game.name;
+    img.loading = "eager";
+    img.decoding = "async";
+    img.referrerPolicy = "no-referrer";
+
+    img.onerror = function() {
+        this.style.display = "none";
+        card.style.background =
+            "linear-gradient(135deg, #252525, #555)";
+
+        const fallback = document.createElement("div");
+        fallback.textContent = game.name;
+        fallback.style.cssText =
+            "position:absolute;inset:0;display:flex;align-items:center;" +
+            "justify-content:center;padding:20px;color:white;" +
+            "font-size:26px;font-weight:bold;text-align:center;" +
+            "font-family:Arial,sans-serif;text-shadow:2px 2px 5px black;";
+        card.insertBefore(fallback, card.firstChild);
+    };
+
+    const overlay = document.createElement("div");
+    overlay.className = "game-overlay";
+
+    const title = document.createElement("h2");
+    title.className = "rainbow";
+    title.textContent = game.name;
+
+    const button = document.createElement("a");
+    button.className = "play";
+    button.textContent = "PLAY";
+    button.href = game.link;
+    button.target = "_blank";
+    button.rel = "noopener noreferrer";
+
+    overlay.appendChild(title);
+    overlay.appendChild(button);
+
+    card.appendChild(img);
+    card.appendChild(overlay);
+
+    gameList.appendChild(card);
+
+});
+
+</script>
+
+</body>
+</html>
