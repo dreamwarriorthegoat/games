@@ -254,11 +254,7 @@ footer {
         <h1 class="rainbow">dreams game catalog!</h1>
 
         <p class="email-info">
-            email 32andpea@hayward.k12.wi.us if you're at school
-            for the password.<br><br>
-
-            if you are at home, email
-            b4113rz3r0@gmail.com for the password.
+            message @lesuperguy on discord for the password.
         </p>
 
         <input
@@ -436,7 +432,7 @@ image: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/43128
 {
 name: "undertale!",
 link: "https://dreamwarriorthegoat.github.io/undertale",
-image: "https://i.kickstarter.com/assets/011/533/904/f58978f175eba8065d1b5afe4545876d_original.png?anim=false&fit=cover&gravity=auto&height=873&origin=ugc&q=92&v=1463684109&width=1552&sig=kzX%2B5jjdyHCsUy0u9j7uM%2FXJHOkl4YpVOcP%2BAD%2BJZ0U%3D"
+image: "https://i.kickstarter.com/assets/011/533/904/f58978f175eba8065d1b5afe4545876d_original.png?anim=false&fit=cover&gravity=auto&height=873&origin=ugc&q=92&v=1463684109&width=1552&sig=kzX%2B5jjdyCsUy0u9j7uM%2FXJHOkl4YpVOcP%2BAD%2BJZ0U%3D"
 },
 
 {
@@ -531,8 +527,7 @@ image: "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=120
 
 {
 name: "snow rider 3D!",
-link: "https://dreamwarriorthegoat.github.io/snow-rider-3d",
-image: "https://web-games.io/cache/data/image/game/SnowRider3D-f314x314-jpg.webp"
+link: "https://web-games.io/cache/data/image/game/SnowRider3D-f314x314-jpg.webp"
 },
 
 {
@@ -561,8 +556,7 @@ image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJKVcYLpsEYc0fqma-
 
 {
 name: "google snake!",
-link: "https://dreamwarriorthegoat.github.io/google-snake",
-image: "https://www5.minijuegosgratis.com/v3/games/thumbnails/246309_1.jpg"
+link: "https://www5.minijuegosgratis.com/v3/games/thumbnails/246309_1.jpg"
 },
 
 {
@@ -700,11 +694,22 @@ games.forEach(game => {
     const img = document.createElement("img");
     img.src = game.image;
     img.alt = game.name;
-    img.loading = "eager";
+    img.loading = "lazy";
     img.decoding = "async";
     img.referrerPolicy = "no-referrer";
 
+    // If the original image host blocks the request, retry through an image proxy.
+    img.dataset.originalSrc = game.image;
+    img.dataset.proxyTried = "false";
+
     img.onerror = function() {
+        if (this.dataset.proxyTried === "false") {
+            this.dataset.proxyTried = "true";
+            const imageUrl = this.dataset.originalSrc.replace(/^https?:\/\//, "");
+            this.src = "https://images.weserv.nl/?url=" + encodeURIComponent(imageUrl);
+            return;
+        }
+
         this.style.display = "none";
         card.style.background =
             "linear-gradient(135deg, #252525, #555)";
